@@ -1,0 +1,65 @@
+#                                Task-2      Calculater using python
+
+import tkinter as tk
+
+def Task_2():
+    window = tk.Tk()
+    window.title("Calculator")
+
+    entry = tk.Entry(window, width=20, font=("Arial", 24), borderwidth=10, relief="sunken")
+    entry.grid(row=0, column=0, columnspan=4, padx=10, pady=10)
+
+    buttons = [
+        '7', '8', '9', '/',
+        '4', '5', '6', '*',
+        '1', '2', '3', '-',
+        '0', '.', '=', '+'
+    ]
+
+    row = 1
+    column = 0
+    for button in buttons:
+        tk.Button(window, text=button, width=5, height=2, font=("Arial", 18),
+                  command=lambda button=button: click(entry, button)).grid(row=row, column=column, padx=5, pady=5)
+        column += 1
+        if column > 3:
+            column = 0
+            row += 1
+
+    tk.Button(window, text="C", width=11, height=2, font=("Arial", 18),
+              command=lambda: clear(entry)).grid(row=row, column=0, columnspan=2, padx=5, pady=5)
+    tk.Button(window, text="⌫", width=5, height=2, font=("Arial", 18),
+              command=lambda: delete(entry)).grid(row=row, column=2, padx=5, pady=5)
+
+
+    window.bind("<Return>", lambda event: click(entry, '='))
+    window.bind("<BackSpace>", lambda event: delete(entry))
+
+    window.mainloop()
+
+def click(entry, button):
+    if button == '=':
+        calculate_result(entry)
+    else:
+        entry.insert(tk.END, button)
+
+def calculate_result(entry):
+    expression = entry.get()
+    try:
+        result = evaluate_expression(expression)
+        entry.delete(0, tk.END)
+        entry.insert(tk.END, result)
+    except:
+        entry.delete(0, tk.END)
+        entry.insert(tk.END, "Error")
+
+def evaluate_expression(expression):
+    return str(eval(expression))
+
+def clear(entry):
+    entry.delete(0, tk.END)
+
+def delete(entry):
+    entry.delete(len(entry.get()) - 1, tk.END)
+
+Task_2()
