@@ -1,0 +1,80 @@
+# Task-1                                               To-do List
+
+import tkinter as tk
+import json
+import os
+
+FILE_NAME = 'task1.json'
+def load_task1():
+    if os.path.exists(FILE_NAME):
+        with open(FILE_NAME, 'r') as file:
+            return json.load(file)
+    return []
+
+def save_task1(task1):
+    with open(FILE_NAME, 'w') as file:
+        json.dump(task1, file)
+
+# For New task
+def New_task():
+    task = entry_task.get()
+    if task:
+        task1 = load_task1()
+        task1.append({'task': task, 'completed': False})
+        save_task1(task1)
+        entry_task.delete(0, tk.END)
+        updated_list()
+
+# Update list in GUI
+def updated_list():
+    listbox_task1.delete(0, tk.END)
+    task1 = load_task1()
+    for idx, task in enumerate(task1):
+        status = 'Completed' if task['completed'] else 'Pending'
+        listbox_task1.insert(tk.END, f"{idx + 1}. {task['task']} [{status}]")
+
+# Mark as completed
+def mark_completed():
+    try:
+        selected_index = listbox_task1.curselection()[0]
+        task1 = load_task1()
+        task1[selected_index]['completed'] = True
+        save_task1(task1)
+        updated_list()
+    except IndexError:
+        tk.messagebox.showwarning("Selection Error", "Please select a task.")
+
+# Delete task
+def delete_task():
+    try:
+        selected_index = listbox_task1.curselection()[0]
+        task1 = load_task1()
+        task1.pop(selected_index)
+        save_task1(task1)
+        updated_list()
+    except IndexError:
+        tk.messagebox.showwarning("Selection Error", "Please select a task.")
+
+# To-Do List window
+root = tk.Tk()
+root.title("To - Do List")
+
+entry_task = tk.Entry(root, width=50)
+entry_task.pack(pady=10)
+
+button_add = tk.Button(root, text="Add Task", command=New_task)
+button_add.pack(pady=5)
+
+listbox_task1 = tk.Listbox(root, width=50, height=15)
+listbox_task1.pack(pady=10)
+
+button_complete = tk.Button(root, text="Mark as Completed", command=mark_completed)
+button_complete.pack(pady=5)
+
+button_delete = tk.Button(root, text="Delete Task", command=delete_task)
+button_delete.pack(pady=5)
+
+updated_list()
+
+root.mainloop()
+
